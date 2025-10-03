@@ -1,0 +1,45 @@
+# Codex output directories (generated files only)
+.mahirolab/workers/
+.mahirolab/research/
+.mahirolab/state/
+
+# Keep documentation, scripts, examples, and templates visible in git
+!.mahirolab/docs/
+!.mahirolab/bin/
+!.mahirolab/examples/
+!.mahirolab/templates/
+
+# Temporary files
+*.tmp
+*_TEMP_*
+*_PLACEHOLDER_*
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local

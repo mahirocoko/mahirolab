@@ -1,0 +1,58 @@
+# Codex Configuration File
+# Override default settings for all Codex helper scripts
+
+# Default reasoning effort level
+# Options: minimal, low, medium, high
+default_reasoning: low
+
+# Output directory for all Codex-generated files
+output_dir: .mahirolab
+
+# Auto-cleanup settings
+auto_cleanup:
+  enabled: true
+  max_age_days: 7
+  compress_old: true
+  compress_age_days: 3
+
+# Worker settings
+workers:
+  max_parallel: 3
+  default_output_type: workers
+  timeout_seconds: 600  # 10 minutes
+
+# Research settings
+research:
+  default_reasoning: medium
+  web_search_enabled: true
+  max_sources: 10
+
+# Color scheme (for terminal output)
+colors:
+  enabled: true
+  scheme: default  # default, minimal, or custom
+
+# Retry settings
+retry:
+  enabled: true
+  max_attempts: 3
+  delay_seconds: 5
+  on_network_error: true
+
+# Logging
+logging:
+  enabled: true
+  level: info  # debug, info, warning, error
+  format: text  # text or json
+  save_to_file: true
+
+# Notifications (future feature)
+notifications:
+  enabled: false
+  on_completion: false
+  on_error: false
+
+# Safety settings
+safety:
+  confirm_destructive: false  # Set to true to confirm destructive operations
+  backup_before_modify: false
