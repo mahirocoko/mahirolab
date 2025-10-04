@@ -13,6 +13,7 @@
 *.tmp
 *_TEMP_*
 *_PLACEHOLDER_*
+tmp/
 
 # Logs
 *.log
