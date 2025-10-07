@@ -1,6 +1,6 @@
 # Claude Shortcode Protocol
 
-Protocol สำหรับการสื่อสารระหว่าง User และ Claude ในการทำงานร่วมกันผ่าน Codex Architecture
+Communication protocol between User and Claude for collaborative work through Codex Architecture.
 
 ---
 
@@ -8,17 +8,17 @@ Protocol สำหรับการสื่อสารระหว่าง U
 
 ### `ccc` - Create Context & Compact
 
-**Purpose:** สรุปและบีบอัด conversation ปัจจุบัน
+**Purpose:** Summarize and compact current conversation
 
 **Claude Action:**
-1. วิเคราะห์ conversation ที่ผ่านมา
-2. สรุปประเด็นสำคัญ:
-   - เป้าหมายหลักของ session
-   - สิ่งที่ทำไปแล้ว
-   - การตัดสินใจที่สำคัญ
-   - ปัญหาที่พบและแก้ไข
-3. สร้าง context file: `.mahirolab/state/context.md`
-4. แสดง summary กลับมาให้ user ดู
+1. Analyze conversation history
+2. Summarize key points:
+   - Main session goals
+   - Completed tasks
+   - Important decisions made
+   - Issues encountered and resolved
+3. Create context file: `.mahirolab/state/context.md`
+4. Display summary to user
 
 **Output Format:**
 ```markdown
@@ -51,23 +51,23 @@ Protocol สำหรับการสื่อสารระหว่าง U
 ```
 
 **When to Use:**
-- เริ่มต้น session ใหม่
-- ก่อนจะวาง plan
-- เมื่อ conversation ยาวเกินไป
-- ก่อนจะสลับ context ไปเรื่องอื่น
+- Starting a new session
+- Before creating a plan
+- When conversation becomes too long
+- Before switching context to another topic
 
 ---
 
 ### `nnn` - Smart Planning
 
-**Purpose:** สร้าง implementation plan แบบละเอียด
+**Purpose:** Create a detailed implementation plan
 
 **Claude Action:**
-1. ตรวจสอบว่ามี context ล่าสุดหรือไม่ (อายุ < 1 ชั่วโมง)
-   - ถ้าไม่มีหรือเก่า → รัน `ccc` ก่อนอัตโนมัติ
-2. อ่าน `.mahirolab/state/context.md`
-3. สร้าง detailed plan: `.mahirolab/state/plan_YYYYMMDD_HHMMSS.md`
-4. แสดง plan overview
+1. Check if recent context exists (age < 1 hour)
+   - If missing or outdated → run `ccc` automatically first
+2. Read `.mahirolab/state/context.md`
+3. Create detailed plan: `.mahirolab/state/plan_YYYYMMDD_HHMMSS.md`
+4. Display plan overview
 
 **Output Format:**
 ```markdown
@@ -116,51 +116,51 @@ Protocol สำหรับการสื่อสารระหว่าง U
 ```
 
 **When to Use:**
-- เมื่อต้องการแผนงานที่ชัดเจน
-- ก่อนเริ่มงานใหญ่ๆ
-- เมื่อต้องการ break down complex task
+- When you need a clear plan
+- Before starting major work
+- When you need to break down complex tasks
 
 ---
 
 ### `gogogo` - Execute Plan
 
-**Purpose:** เริ่มดำเนินการตาม plan ล่าสุด
+**Purpose:** Start executing the most recent plan
 
 **Claude Action:**
-1. อ่าน plan ล่าสุดจาก `.mahirolab/state/`
-2. ถามยืนยันก่อนเริ่ม (ถ้า user ไม่ได้บอกให้ skip)
-3. Execute tasks ทีละ step:
-   - แสดง task ที่กำลังทำ
-   - ทำงานตาม specification
-   - Update progress ใน `.mahirolab/state/progress.md`
-   - ถามก่อนไป step ถัดไปถ้าเป็น critical task
-4. Report หลังจบแต่ละ phase
+1. Read the latest plan from `.mahirolab/state/`
+2. Ask for confirmation before starting (unless user says to skip)
+3. Execute tasks step by step:
+   - Display current task being worked on
+   - Perform work according to specification
+   - Update progress in `.mahirolab/state/progress.md`
+   - Ask before proceeding if it's a critical task
+4. Report after each phase completes
 
 **Execution Behavior:**
-- **Sequential by default:** ทำทีละ task ตามลำดับ
-- **Stop on error:** หยุดถ้าเจอ error, รอ user แก้
-- **Progress tracking:** Update checkbox ใน plan file
-- **Logging:** บันทึกทุก action ลง `.mahirolab/state/execution_log.md`
+- **Sequential by default:** Execute tasks one at a time in order
+- **Stop on error:** Halt if error encountered, wait for user to fix
+- **Progress tracking:** Update checkboxes in plan file
+- **Logging:** Record all actions to `.mahirolab/state/execution_log.md`
 
 **When to Use:**
-- เมื่อพร้อมจะเริ่มทำตาม plan
-- เมื่ออยากให้ Claude ทำแบบ autonomous
-- เมื่อมี plan ที่ชัดเจนแล้ว
+- When ready to execute the plan
+- When you want Claude to work autonomously
+- When you have a clear plan ready
 
 ---
 
 ### `rrr` - Retrospective
 
-**Purpose:** สร้าง session retrospective
+**Purpose:** Create session retrospective
 
 **Claude Action:**
-1. อ่าน:
+1. Read:
    - `.mahirolab/state/context.md`
    - `.mahirolab/state/plan_*.md`
    - `.mahirolab/state/progress.md`
    - Conversation history
-2. วิเคราะห์และสร้าง retrospective
-3. บันทึกลง `.mahirolab/state/retrospective_YYYYMMDD.md`
+2. Analyze and create retrospective
+3. Save to `.mahirolab/state/retrospective_YYYYMMDD.md`
 
 **Output Format:**
 ```markdown
@@ -207,20 +207,20 @@ Protocol สำหรับการสื่อสารระหว่าง U
 ```
 
 **When to Use:**
-- จบ session
-- จบ milestone ใหญ่
-- ทุกสัปดาห์ (weekly retro)
+- End of session
+- After completing major milestones
+- Weekly retrospectives
 
 ---
 
 ### `lll` - List Project Status
 
-**Purpose:** แสดงภาพรวมสถานะโปรเจกต์
+**Purpose:** Display project status overview
 
 **Claude Action:**
-1. แสดงข้อมูลจากหลายแหล่ง:
-   - Current context (ถ้ามี)
-   - Active plan (ถ้ามี)
+1. Display information from multiple sources:
+   - Current context (if exists)
+   - Active plan (if exists)
    - Recent progress
    - Git status
    - Recent codex jobs
@@ -264,9 +264,9 @@ Protocol สำหรับการสื่อสารระหว่าง U
 ```
 
 **When to Use:**
-- เริ่มต้น session เพื่อดูว่าค้างอะไรไว้
-- Check progress ระหว่างทำงาน
-- ก่อนจะสลับไป task อื่น
+- Starting session to see what's pending
+- Check progress during work
+- Before switching to another task
 
 ---
 
@@ -284,7 +284,7 @@ Protocol สำหรับการสื่อสารระหว่าง U
 ```
 
 ### File Lifecycle
-1. **context.md** - Refreshed when run `ccc`
+1. **context.md** - Refreshed when running `ccc`
 2. **plan_*.md** - Created by `nnn`, executed by `gogogo`
 3. **progress.md** - Updated during `gogogo` execution
 4. **execution_log.md** - Appended during execution
@@ -318,31 +318,31 @@ Session End:
 ### Best Practices
 
 ✅ **Do:**
-- Run `ccc` เมื่อเริ่ม session ใหม่
-- Run `lll` บ่อยๆ เพื่อ check progress
-- Run `rrr` เมื่อจบงานสำคัญ
-- Review plan ก่อน `gogogo`
+- Run `ccc` when starting new session
+- Run `lll` frequently to check progress
+- Run `rrr` when completing major work
+- Review plan before `gogogo`
 
 ❌ **Don't:**
-- อย่า `gogogo` โดยไม่มี plan
-- อย่าลืม `ccc` ทำให้ context หาย
-- อย่า skip retrospective (เสีย learning)
+- Don't `gogogo` without a plan
+- Don't forget `ccc` and lose context
+- Don't skip retrospective (lose learning opportunities)
 
 ---
 
 ## Integration with Codex Architecture
 
-Shortcodes ทำงานร่วมกับ Codex scripts:
+Shortcodes work together with Codex scripts:
 
-- `ccc`, `nnn`, `rrr`, `lll` → **Pure Claude actions** (ไม่เรียก codex)
-- `gogogo` → **May invoke Codex scripts** ตาม plan
-  - เช่น task บอกใช้ `codex-exec.sh` Claude ก็จะเรียกผ่าน Bash tool
+- `ccc`, `nnn`, `rrr`, `lll` → **Pure Claude actions** (no codex invocation)
+- `gogogo` → **May invoke Codex scripts** based on plan
+  - Example: if task specifies `codex-exec.sh`, Claude will invoke it via Bash tool
 
 ---
 
 ## Future Shortcodes (Reserved)
 
-คำที่เตรียมไว้สำหรับอนาคต:
+Reserved for future use:
 
 - `qqq` - Quick questions/clarifications
 - `sss` - Show architecture/system summary
@@ -355,13 +355,13 @@ Shortcodes ทำงานร่วมกับ Codex scripts:
 
 ## Notes for Claude
 
-เมื่อเจอ shortcode ใน conversation:
+When encountering shortcode in conversation:
 
-1. **ไม่ต้องถาม confirm** - ทำทันที
-2. **ใช้ format ตามที่กำหนด** - เพื่อความ consistent
-3. **เก็บไฟล์ใน .mahirolab/state/** - ตาม specification
-4. **แสดง summary สั้นๆ** - ไม่ต้อง verbose
-5. **ถ้าเจอปัญหา** - รายงานและรอ instruction
+1. **No confirmation needed** - Execute immediately
+2. **Follow specified format** - For consistency
+3. **Save files in .mahirolab/state/** - Per specification
+4. **Show brief summary** - No verbose output
+5. **If issues arise** - Report and wait for instructions
 
 ---
 
