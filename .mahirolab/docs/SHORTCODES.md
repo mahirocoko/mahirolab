@@ -260,7 +260,7 @@ Communication protocol between User and Claude for collaborative work through Co
 📁 KEY FILES MODIFIED
   - SHORTCODES.md (2 min ago)
   - CLAUDE.md (15 min ago)
-  - codex.yaml (1 hour ago)
+  - context.md (1 hour ago)
 ```
 
 **When to Use:**

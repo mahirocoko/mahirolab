@@ -144,7 +144,6 @@ echo "  - [Tip 2]"
 ## Next Steps
 
 - Review `CLAUDE.md` for architecture overview
-- Check `codex.yaml` for configuration options
 - Use `--help` flag on any script for detailed usage
 - Combine examples to create custom workflows
 

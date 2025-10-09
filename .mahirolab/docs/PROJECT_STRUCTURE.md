@@ -24,9 +24,6 @@ my-ai/
 │   │   └── PROJECT_STRUCTURE.md   # This file
 │   └── .gitignore                 # Git ignore rules
 │
-├── ⚙️ Configuration
-│   └── codex.yaml                 # Reference config (not actively used)
-│
 ├── 📚 Examples
 │   └── examples/
 │       ├── 01-quick-task.sh       # Basic synchronous execution
@@ -45,8 +42,8 @@ my-ai/
 │
 └── 💾 Runtime Data (Generated)
     └── .mahirolab/
-        ├── workers/               # Worker job outputs
-        ├── research/              # Research reports
+        ├── workers/               # Worker job outputs (auto-created)
+        ├── research/              # Research reports (auto-created)
         └── state/                 # Communication protocol state
             ├── context.md         # Session context (ccc)
             ├── plan_*.md          # Implementation plans (nnn)
@@ -208,7 +205,7 @@ All examples are:
 
 ## 📄 Templates Library
 
-Markdown templates for consistent outputs in `templates/`:
+Markdown templates for consistent outputs in `templates/` (**reference-only, manual use**):
 
 ### `research-report.md`
 - Executive Summary
@@ -232,6 +229,8 @@ Markdown templates for consistent outputs in `templates/`:
 - Security Analysis
 - Performance Analysis
 - Action Items
+
+**Note:** Templates are not automatically integrated. Reference them manually in prompts or copy their structure as needed.
 
 ---
 
@@ -298,25 +297,6 @@ User: nnn                    # Create plan
 User: gogogo                 # Execute plan
 User: rrr                    # Retrospective
 ```
-
----
-
-## ⚙️ Configuration
-
-### `codex.yaml` (Reference Only)
-Currently not actively used by scripts. Scripts use hardcoded defaults:
-
-```yaml
-default_reasoning: low
-output_dir: .mahirolab
-auto_cleanup:
-  max_age_days: 7
-workers:
-  max_parallel: 3
-  timeout_seconds: 600
-```
-
-**To customize:** Edit individual script variables directly.
 
 ---
 

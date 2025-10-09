@@ -70,23 +70,24 @@ Collection of markdown templates for generating consistent, well-structured repo
 
 ## Using Templates
 
+Templates are **reference-only** and not automatically integrated with scripts.
+
 ### Method 1: Manual Replacement
 
 1. Copy template file
 2. Replace `{{PLACEHOLDER}}` with actual values
 3. Fill in sections with content
 
-### Method 2: Script-Based (Coming Soon)
+### Method 2: Reference in Prompts
 
 ```bash
-./codex-research.sh --template templates/research-report.md "Your topic"
+./codex-exec.sh "Generate a code review following the format in templates/code-review.md"
+./codex-research.sh "Research topic using structure from templates/research-report.md"
 ```
 
-### Method 3: Direct in Prompt
+### Method 3: Copy Structure
 
-```bash
-./codex-exec.sh "Generate a code review using templates/code-review.md format"
-```
+Copy the markdown structure from templates and paste into your own reports as needed.
 
 ---
 
@@ -164,18 +165,16 @@ Collection of markdown templates for generating consistent, well-structured repo
 
 ---
 
-## Integration with Scripts
+## Manual Integration Example
 
-### Example: Using Templates in Research Script
+You can manually reference templates in your workflow:
 
 ```bash
-# In codex-research.sh
-TEMPLATE_FILE="templates/research-report.md"
+# Step 1: Reference template in prompt
+./codex-research.sh "Research Next.js 15 using the structure from templates/research-report.md"
 
-if [ -f "$TEMPLATE_FILE" ]; then
-    # Inject template structure into prompt
-    codex exec ... "Use template: $TEMPLATE_FILE. Topic: $RESEARCH_TOPIC"
-fi
+# Step 2: Review and adjust output
+# Templates provide a reference structure, but scripts don't automatically apply them
 ```
 
 ---

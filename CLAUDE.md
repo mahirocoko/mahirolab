@@ -131,23 +131,6 @@ All scripts located in `.mahirolab/bin/`
   - Dry-run mode for safety
 - **Options:** `--dry-run`, `--age DAYS`, `--compress-only`, `--stats`, `--force`
 
-## Configuration System
-
-### `codex.yaml`
-Optional configuration file for reference (not actively used by scripts):
-```yaml
-default_reasoning: low
-output_dir: .mahirolab
-auto_cleanup:
-  enabled: true
-  max_age_days: 7
-workers:
-  max_parallel: 3
-  timeout_seconds: 600
-```
-
-Scripts use hardcoded defaults for simplicity. Modify individual scripts directly for custom settings.
-
 ## Examples Library
 
 Pre-built example scripts in `.mahirolab/examples/`:
@@ -165,16 +148,15 @@ Each example includes:
 
 ## Templates Library
 
-Markdown templates in `.mahirolab/templates/`:
+Markdown templates in `.mahirolab/templates/` (for manual reference):
 - `research-report.md` - Structured research output
 - `worker-task.md` - Background task reports
 - `code-review.md` - Comprehensive code reviews
 
-Templates include:
-- Consistent formatting
-- Placeholder variables (`{{TOPIC}}`, `{{DATE}}`, etc.)
-- Section guidelines
-- Example content
+Templates are **reference-only** and not automatically integrated with scripts. Use them manually by:
+- Copying template structure into prompts
+- Referencing format in task descriptions
+- Using as documentation guidelines
 
 ## Maintenance & Hardening
 
@@ -190,7 +172,6 @@ Templates include:
 - Template integration with research/worker scripts
 - Pipeline orchestration (YAML-based workflows)
 - Retry logic with exponential backoff
-- Configuration loader for codex.yaml
 - Web UI for job monitoring
 - Metrics and analytics dashboard
 
