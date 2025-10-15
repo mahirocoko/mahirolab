@@ -179,12 +179,14 @@ Templates are **reference-only** and not automatically integrated with scripts. 
 
 ## Communication Protocol
 
-For efficient collaboration between User and Claude, use **Shortcodes** defined in [docs/SHORTCODES.md](docs/SHORTCODES.md):
+For efficient collaboration between User and Claude, use **Shortcodes** defined in [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md):
 
 - **`ccc`** - Create context & compact conversation
 - **`nnn`** - Smart planning (auto-runs ccc if needed)
 - **`gogogo`** - Execute most recent plan
 - **`rrr`** - Create session retrospective
 - **`lll`** - List project status
+
+**IMPORTANT:** When a user invokes any shortcode, Claude **MUST** read the shortcode documentation at [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md) first if it has not been read in the current session. This ensures correct interpretation and execution of the shortcode's intended behavior.
 
 These shortcodes enable quick, consistent workflow management without verbose instructions. All state files are stored in `.mahirolab/state/` for persistence across sessions.
