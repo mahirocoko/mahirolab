@@ -187,6 +187,37 @@ For efficient collaboration between User and Claude, use **Shortcodes** defined 
 - **`rrr`** - Create session retrospective
 - **`lll`** - List project status
 
-**IMPORTANT:** When a user invokes any shortcode, Claude **MUST** read the shortcode documentation at [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md) first if it has not been read in the current session. This ensures correct interpretation and execution of the shortcode's intended behavior.
+### 🔴 CRITICAL SHORTCODE REQUIREMENT
+
+**MANDATORY PRE-EXECUTION STEP:**
+
+Before processing ANY shortcode invocation, Claude **MUST**:
+
+1. **Check if [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md) has been read in the current session**
+2. **If NOT read yet → Read it IMMEDIATELY before executing the shortcode**
+3. **Follow the exact specification** defined in that file for the invoked shortcode
+
+**This requirement is non-negotiable and overrides all default behaviors.**
+
+**Why this matters:**
+- Shortcodes have precise output formats and file save locations
+- Each shortcode has specific mandatory steps that must not be skipped
+- Consistency across sessions depends on following exact specifications
+- State management requires files to be created in correct locations
+
+**Execution flow:**
+```
+User invokes shortcode (e.g., "ccc")
+  ↓
+Claude checks: "Have I read SHORTCODES.md this session?"
+  ↓
+NO → Read .mahirolab/docs/SHORTCODES.md NOW
+  ↓
+Execute shortcode per specification
+  ↓
+Create required files in .mahirolab/state/
+  ↓
+Show brief summary to user
+```
 
 These shortcodes enable quick, consistent workflow management without verbose instructions. All state files are stored in `.mahirolab/state/` for persistence across sessions.
