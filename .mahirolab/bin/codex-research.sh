@@ -63,22 +63,57 @@ fi
 # Get research topic and sanitize for filename
 RESEARCH_TOPIC="$1"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
 TASK_NAME=$(echo "$RESEARCH_TOPIC" | sed 's/[^a-zA-Z0-9]/_/g' | tr '[:upper:]' '[:lower:]' | sed 's/__*/_/g' | sed 's/^_\|_$//g')
 OUTPUT_FILE=".mahirolab/research/${TIMESTAMP}_PLACEHOLDER_codex_${TASK_NAME}.md"
 
 # Create output directory if it doesn't exist
 mkdir -p .mahirolab/research
 
+# Load template if exists
+TEMPLATE_FILE=".mahirolab/templates/research-report.md"
+if [ -f "$TEMPLATE_FILE" ]; then
+    TEMPLATE_CONTENT=$(cat "$TEMPLATE_FILE")
+    # Replace placeholders
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{TOPIC}}|${RESEARCH_TOPIC}|g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{DATE}}|${CURRENT_DATE}|g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{REASONING_LEVEL}}|medium|g")
+    USE_TEMPLATE=true
+    echo -e "${GREEN}✓ Template loaded: ${TEMPLATE_FILE}${NC}"
+else
+    USE_TEMPLATE=false
+    echo -e "${YELLOW}⚠ Template not found, using default structure${NC}"
+fi
+
 echo -e "${BLUE}🔍 Codex Research Engine${NC}"
 echo -e "${YELLOW}Topic: ${RESEARCH_TOPIC}${NC}"
 echo -e "${GREEN}Output: ${OUTPUT_FILE}${NC}"
 echo "----------------------------------------"
 
-# Execute Codex research with structured prompt
-codex exec -s danger-full-access \
-  -c 'tools.web_search=true' \
-  -c model_reasoning_effort="medium" \
-  "Research: ${RESEARCH_TOPIC}
+# Build prompt based on template availability
+if [ "$USE_TEMPLATE" = true ]; then
+    # Use template-based prompt
+    PROMPT="Research: ${RESEARCH_TOPIC}
+
+Use the following template structure for your research report:
+
+${TEMPLATE_CONTENT}
+
+**IMPORTANT INSTRUCTIONS**:
+1. Replace PLACEHOLDER in filename '${OUTPUT_FILE}' with your process ID
+2. Use DIRECT URLs ONLY in citations (NOT [Title](URL) format)
+3. Example: https://docs.docker.com/build/cache/, https://github.com/github/spec-kit
+4. Do NOT use markdown link titles: AVOID [Docker Cache](https://url), [Spec-Kit](https://url)
+5. Include publication dates where available
+6. Prioritize official documentation and authoritative sources
+7. Use web search to get the most current information
+8. Keep all citations clean and simple with direct URLs only
+9. Follow the template structure exactly as provided above
+
+Save output to: ${OUTPUT_FILE}"
+else
+    # Fallback to default structure
+    PROMPT="Research: ${RESEARCH_TOPIC}
 
 Create a comprehensive markdown report with the following structure:
 
@@ -110,14 +145,21 @@ Create a comprehensive markdown report with the following structure:
 **IMPORTANT INSTRUCTIONS**:
 1. Replace PLACEHOLDER in filename '${OUTPUT_FILE}' with your process ID
 2. Use DIRECT URLs ONLY in citations (NOT [Title](URL) format)
-3. Example: (https://docs.docker.com/build/cache/, https://github.com/github/spec-kit)
-4. Do NOT use markdown link titles: AVOID ([Docker Cache](https://url), [Spec-Kit](https://url))
+3. Example: https://docs.docker.com/build/cache/, https://github.com/github/spec-kit
+4. Do NOT use markdown link titles: AVOID [Docker Cache](https://url), [Spec-Kit](https://url)
 5. Include publication dates where available
 6. Prioritize official documentation and authoritative sources
 7. Use web search to get the most current information
 8. Keep all citations clean and simple with direct URLs only
 
 Save output to: ${OUTPUT_FILE}"
+fi
+
+# Execute Codex research with structured prompt
+codex exec -s danger-full-access \
+  -c 'tools.web_search=true' \
+  -c model_reasoning_effort="medium" \
+  "$PROMPT"
 
 # Capture exit code
 EXIT_CODE=$?

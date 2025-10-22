@@ -84,10 +84,27 @@ fi
 
 # Generate timestamp and temp filename
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+START_TIME=$(date +"%Y-%m-%d %H:%M:%S")
 TEMP_FILE=".mahirolab/${OUTPUT_TYPE}/${TIMESTAMP}_TEMP_codex_task.md"
 
 # Create output directory if it doesn't exist
 mkdir -p ".mahirolab/${OUTPUT_TYPE}"
+
+# Load template if exists
+TEMPLATE_FILE=".mahirolab/templates/worker-task.md"
+if [ -f "$TEMPLATE_FILE" ]; then
+    TEMPLATE_CONTENT=$(cat "$TEMPLATE_FILE")
+    # Replace placeholders that we know now
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{TASK_DESCRIPTION}}|${TASK}|g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{START_TIME}}|${START_TIME}|g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{REASONING_LEVEL}}|${REASONING}|g")
+    # Leave END_TIME, DURATION, WORKER_PID, EXIT_CODE for Codex to fill
+    USE_TEMPLATE=true
+    echo -e "${GREEN}✓ Template loaded: ${TEMPLATE_FILE}${NC}"
+else
+    USE_TEMPLATE=false
+    echo -e "${YELLOW}⚠ Template not found, using default structure${NC}"
+fi
 
 echo -e "${BLUE}🚀 Launching Codex Worker${NC}"
 echo -e "${YELLOW}Reasoning: ${REASONING}${NC}"
@@ -96,10 +113,41 @@ echo -e "${GREEN}Task: ${TASK}${NC}"
 echo -e "${MAGENTA}Temp file: ${TEMP_FILE}${NC}"
 echo "----------------------------------------"
 
+# Build prompt based on template availability
+if [ "$USE_TEMPLATE" = true ]; then
+    # Use template-based prompt
+    PROMPT="${TASK}
+
+Use the following template structure for your task report:
+
+${TEMPLATE_CONTENT}
+
+**IMPORTANT INSTRUCTIONS**:
+1. Fill in all remaining placeholders ({{END_TIME}}, {{DURATION}}, {{WORKER_PID}}, {{EXIT_CODE}})
+2. Follow the template structure exactly as provided
+3. Include all sections even if some are marked as N/A
+4. Be specific and detailed in your reporting
+5. Document all changes, issues, and next steps
+
+Save output to: ${TEMP_FILE}"
+else
+    # Fallback to simple prompt
+    PROMPT="${TASK}
+
+Create a detailed task report including:
+- Task summary
+- Steps executed
+- Results and changes made
+- Any issues encountered
+- Next steps and recommendations
+
+Save output to: ${TEMP_FILE}"
+fi
+
 # Launch Codex in background and capture bash ID
 echo -e "${CYAN}Launching background process...${NC}"
 BASH_ID=$(bash -c "
-codex exec -s danger-full-access -c model_reasoning_effort='${REASONING}' '${TASK}. Save output to: ${TEMP_FILE}' &
+codex exec -s danger-full-access -c model_reasoning_effort='${REASONING}' '${PROMPT}' &
 echo \$!
 " 2>/dev/null | tail -1)
 

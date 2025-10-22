@@ -8,17 +8,24 @@ Communication protocol between User and Claude for collaborative work through Co
 
 ### `ccc` - Create Context & Compact
 
-**Purpose:** Summarize and compact current conversation
+**Purpose:** Summarize current conversation with session continuity support
 
 **Claude Action:**
-1. Analyze conversation history
-2. Summarize key points:
-   - Main session goals
-   - Completed tasks
-   - Important decisions made
-   - Issues encountered and resolved
-3. Create context file: `.mahirolab/state/context.md`
-4. Display summary to user
+1. Check for existing context in `.mahirolab/state/context.md`
+2. If context exists:
+   - Prompt user: "Continue from previous session or Start fresh?"
+   - **[1] Continue:** Show diff → Ask confirmation → Merge contexts
+   - **[2] Fresh:** Archive old context → Create new one
+3. Create versioned copy in `.mahirolab/state/context_history/context_vN_YYYYMMDD.md`
+4. Update `.mahirolab/state/context.md` with current/merged context
+5. Display summary to user
+
+**Session Continuity:**
+- Every `ccc` execution creates a new version in `context_history/`
+- Version format: `context_vN_YYYYMMDD.md` (N = sequential number)
+- "Continue" mode merges old goals, tasks, decisions with new information
+- "Fresh" mode archives old context completely but keeps it accessible
+- All changes logged to `execution_log.md`
 
 **Output Format:**
 ```markdown
@@ -65,9 +72,17 @@ Communication protocol between User and Claude for collaborative work through Co
 **Claude Action:**
 1. Check if recent context exists (age < 1 hour)
    - If missing or outdated → run `ccc` automatically first
-2. Read `.mahirolab/state/context.md`
-3. Create detailed plan: `.mahirolab/state/plan_YYYYMMDD_HHMMSS.md`
-4. Display plan overview
+2. Read `.mahirolab/state/context.md` and latest context version from `context_history/`
+3. Create detailed plan: `.mahirolab/state/plans/plan_YYYYMMDD_HHMMSS.md`
+4. Reference context version in plan header
+5. Check prerequisites from context
+6. Display plan overview
+
+**New Behavior:**
+- Plans saved to `.mahirolab/state/plans/` (not root state/)
+- Plan includes reference to context version used
+- Prerequisites checked against context
+- Supports new directory structure
 
 **Output Format:**
 ```markdown
@@ -124,23 +139,35 @@ Communication protocol between User and Claude for collaborative work through Co
 
 ### `gogogo` - Execute Plan
 
-**Purpose:** Start executing the most recent plan
+**Purpose:** Start executing the most recent plan with real-time progress tracking
 
 **Claude Action:**
-1. Read the latest plan from `.mahirolab/state/`
-2. Ask for confirmation before starting (unless user says to skip)
-3. Execute tasks step by step:
-   - Display current task being worked on
-   - Perform work according to specification
-   - Update progress in `.mahirolab/state/progress.md`
-   - Ask before proceeding if it's a critical task
-4. Report after each phase completes
+1. Read the latest plan from `.mahirolab/state/plans/`
+2. Initialize `.mahirolab/state/progress.md` with plan structure
+3. Ask for confirmation before starting (unless user says to skip)
+4. Execute tasks step by step:
+   - Mark task as 🔄 In Progress with start timestamp
+   - Display current task and step being worked on
+   - Update "Current step" during execution
+   - On completion: Mark ✅, record end timestamp, calculate duration
+   - On failure: Mark ❌, log error, add to blockers, STOP execution
+5. Update progress bars after each task
+6. Calculate ETA based on completed tasks
+7. Report after each phase completes
+8. Update `execution_log.md` with detailed timeline
+
+**Real-Time Progress Tracking:**
+- Updates `progress.md` continuously with timestamps
+- Shows progress bars: `[████████░░░░░░░░░░░░] 40% (6/15 tasks)`
+- Displays ETA based on average task duration
+- Logs every significant action to `execution_log.md`
+- Status emojis: 🔄 In Progress, ✅ Completed, ⏳ Pending, ❌ Failed
 
 **Execution Behavior:**
 - **Sequential by default:** Execute tasks one at a time in order
 - **Stop on error:** Halt if error encountered, wait for user to fix
-- **Progress tracking:** Update checkboxes in plan file
-- **Logging:** Record all actions to `.mahirolab/state/execution_log.md`
+- **Progress tracking:** Real-time updates to progress.md
+- **Logging:** Detailed timeline in execution_log.md
 
 **When to Use:**
 - When ready to execute the plan
@@ -151,16 +178,30 @@ Communication protocol between User and Claude for collaborative work through Co
 
 ### `rrr` - Retrospective
 
-**Purpose:** Create session retrospective
+**Purpose:** Create comprehensive session retrospective with metrics
 
 **Claude Action:**
-1. Read:
-   - `.mahirolab/state/context.md`
-   - `.mahirolab/state/plan_*.md`
-   - `.mahirolab/state/progress.md`
+1. Gather data from:
+   - `.mahirolab/state/context.md` and `context_history/` (latest version)
+   - `.mahirolab/state/plans/` (latest plan)
+   - `.mahirolab/state/progress.md` (task completion data)
+   - `.mahirolab/state/execution_log.md` (timeline and events)
    - Conversation history
-2. Analyze and create retrospective
-3. Save to `.mahirolab/state/retrospective_YYYYMMDD.md`
+2. Calculate session metrics:
+   - Tasks completed vs. total
+   - Time spent (from timestamps)
+   - Success rate
+   - Issues encountered
+3. Create comprehensive retrospective
+4. Save to `.mahirolab/state/retrospectives/retrospective_YYYYMMDD.md`
+5. Update `execution_log.md` with retrospective creation
+
+**New Behavior:**
+- Retrospectives saved to `.mahirolab/state/retrospectives/` (not root state/)
+- Includes analytics metrics if available
+- References both context version and plan used
+- Comprehensive session summary with learnings
+- Supports new directory structure
 
 **Output Format:**
 ```markdown
@@ -215,16 +256,27 @@ Communication protocol between User and Claude for collaborative work through Co
 
 ### `lll` - List Project Status
 
-**Purpose:** Display project status overview
+**Purpose:** Display comprehensive project status with progress bars and timeline
 
 **Claude Action:**
-1. Display information from multiple sources:
-   - Current context (if exists)
-   - Active plan (if exists)
-   - Recent progress
+1. Gather information from multiple sources:
+   - Current context from `.mahirolab/state/context.md`
+   - Context versions from `.mahirolab/state/context_history/`
+   - Active plan from `.mahirolab/state/plans/`
+   - Progress from `.mahirolab/state/progress.md`
    - Git status
-   - Recent codex jobs
-   - File structure changes
+   - Recent codex jobs from `.mahirolab/workers/` and `.mahirolab/research/`
+   - State storage metrics
+2. Calculate progress bars for phases and overall progress
+3. Build session timeline from `execution_log.md` (last 7 days)
+4. Generate analytics and recommendations
+5. Display enhanced dashboard
+
+**Enhanced Features:**
+- **Progress Bars:** Visual representation of task completion
+- **Session Timeline:** Last 7 days of sessions with completion percentages
+- **State Analytics:** Productivity metrics, success rates, storage usage
+- **Cleanup Recommendations:** Suggestions for maintenance
 
 **Output Format:**
 ```
@@ -233,9 +285,19 @@ Communication protocol between User and Claude for collaborative work through Co
 ╚════════════════════════════════════════╝
 
 📝 CURRENT CONTEXT
+  Session: 20251022_123918
   Last updated: 2 hours ago
   Main goal: [from context.md]
-  Status: In progress
+  Version: v2 (2 total)
+
+📊 PROGRESS
+  Overall: [████████░░░░░░░░░░░░] 40% (6/15 tasks)
+
+  Phase 1: Template Auto-injection
+  [████████████████████] 100% (4/4 tasks) ✅
+
+  Phase 2: State Management
+  [████░░░░░░░░░░░░░░░░] 20% (2/10 tasks) 🔄
 
 📋 ACTIVE PLAN
   Plan: plan_20250103_143000.md
@@ -276,19 +338,45 @@ Communication protocol between User and Claude for collaborative work through Co
 ```
 .mahirolab/
 └── state/
-    ├── context.md              # Current session context
-    ├── plan_YYYYMMDD_HHMMSS.md # Implementation plans
-    ├── progress.md             # Execution progress tracking
-    ├── execution_log.md        # Detailed execution log
-    └── retrospective_YYYYMMDD.md # Session retrospectives
+    ├── context.md                    # Current session context
+    ├── context_history/              # Versioned context snapshots
+    │   ├── context_v1_20251022.md
+    │   ├── context_v2_20251022.md
+    │   └── context_v3_20251023.md
+    ├── plans/                        # All implementation plans
+    │   ├── plan_20251022_120000.md
+    │   └── plan_20251023_140000.md
+    ├── retrospectives/               # Session retrospectives
+    │   ├── retrospective_20251022.md
+    │   └── retrospective_20251023.md
+    ├── progress.md                   # Current execution progress
+    ├── execution_log.md              # Detailed event timeline
+    ├── archive/                      # Archived old files
+    │   ├── contexts/
+    │   ├── plans/
+    │   └── retrospectives/
+    └── analytics/                    # Analytics data (optional)
+        ├── context_metrics.json
+        └── session_metrics.json
 ```
 
 ### File Lifecycle
-1. **context.md** - Refreshed when running `ccc`
-2. **plan_*.md** - Created by `nnn`, executed by `gogogo`
-3. **progress.md** - Updated during `gogogo` execution
-4. **execution_log.md** - Appended during execution
-5. **retrospective_*.md** - Created by `rrr`
+1. **context.md** - Refreshed when running `ccc`, creates version in `context_history/`
+2. **context_history/** - Permanent versioned snapshots, never deleted
+3. **plans/*.md** - Created by `nnn`, executed by `gogogo`
+4. **progress.md** - Initialized and updated during `gogogo` execution with real-time status
+5. **execution_log.md** - Appended during execution with detailed timeline
+6. **retrospectives/*.md** - Created by `rrr` with comprehensive session summary
+7. **archive/** - Old files moved here, manual cleanup only (no auto-delete)
+
+### Session Continuity Features
+- **Context Versioning:** Every `ccc` creates a new version
+- **Continue vs. Fresh:** Choose to merge with previous session or start clean
+- **Progress Bars:** Visual task completion tracking
+- **Timeline View:** See sessions from last 7 days in `lll`
+- **Archive Policy:** All data preserved, no automatic deletion
+
+For complete details, see [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md)
 
 ---
 
