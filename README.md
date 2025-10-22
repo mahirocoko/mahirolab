@@ -19,11 +19,18 @@ A powerful automation framework for orchestrating Claude AI tasks using direct p
 
 Fast workflow management using communication protocol:
 
+### Core Workflow
 - **`ccc`** - Create context & compact conversation
 - **`nnn`** - Smart planning (auto-runs ccc if needed)
 - **`gogogo`** - Execute most recent plan
 - **`rrr`** - Create session retrospective
 - **`lll`** - List project status
+
+### Codex Integration (NEW)
+- **`rrresearch "topic"`** - Claude-managed research with web search
+- **`www [reasoning] "task"`** - Claude-managed background worker
+
+> 💡 **Difference:** Shortcodes are Claude-managed (visible in UI, can monitor/stop), while direct scripts run independently.
 
 ## Documentation
 

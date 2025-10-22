@@ -332,6 +332,155 @@ Communication protocol between User and Claude for collaborative work through Co
 
 ---
 
+## Codex Integration Shortcodes
+
+### `rrresearch` - Claude-Managed Research
+
+**Purpose:** Run codex research with Claude supervision and monitoring
+
+**Claude Action:**
+1. Accept research topic from user (format: `rrresearch "topic"`)
+2. Prepare research prompt with template injection from `.mahirolab/templates/research-report.md`
+3. Execute using Bash tool with `run_in_background: true`:
+   ```bash
+   codex exec -s danger-full-access \
+     -c tools.web_search=true \
+     -c model_reasoning_effort="medium" \
+     "[research prompt with template]"
+   ```
+4. Store bash_id for monitoring
+5. Notify user with job ID
+6. User can check progress anytime with status updates
+
+**Parameters:**
+- **Topic:** Research subject (required)
+- **Reasoning:** Always `medium` (fixed)
+- **Web Search:** Always enabled
+
+**Output:**
+- File: `.mahirolab/research/YYYYMMDD_HHMMSS_PLACEHOLDER_codex_{topic}.md`
+- Codex will replace PLACEHOLDER with its process ID
+- Template-based structured markdown report
+
+**Monitoring:**
+```
+User: Check research status
+Claude: [Uses BashOutput tool to show progress]
+```
+
+**When to Use:**
+- Need latest information from web
+- Want Claude to monitor research progress
+- Research task expected to take > 2 minutes
+- Want ability to check status during execution
+
+**Example:**
+```
+User: rrresearch "React 19 new features"
+Claude: 🔍 Starting research job...
+        Job ID: bash_12345
+        Topic: React 19 new features
+        Output: .mahirolab/research/20251022_141234_PLACEHOLDER_codex_react_19_new_features.md
+
+        ✅ Job running in background
+        Use "check status" to monitor progress
+```
+
+---
+
+### `www` - Claude-Managed Worker
+
+**Purpose:** Run codex background worker with Claude supervision
+
+**Claude Action:**
+1. Accept task description and optional parameters (format: `www [reasoning] "task"`)
+2. Parse parameters:
+   - Reasoning level (default: `low`)
+   - Output type (default: `workers`)
+   - Task description (required)
+3. Prepare worker prompt with template injection from `.mahirolab/templates/worker-task.md`
+4. Execute using Bash tool with `run_in_background: true`:
+   ```bash
+   codex exec -s danger-full-access \
+     -c model_reasoning_effort="{reasoning}" \
+     "[worker prompt with template]"
+   ```
+5. Store bash_id for monitoring
+6. Notify user with job ID
+7. User can check progress anytime
+
+**Parameters:**
+- **Reasoning:** minimal | low | medium | high (default: `low`)
+- **Output Type:** workers | research | custom (default: `workers`)
+- **Task:** Task description (required)
+
+**Output:**
+- File: `.mahirolab/{output_type}/YYYYMMDD_HHMMSS_TEMP_codex_task.md`
+- Will be renamed to include bash PID when complete
+- Template-based task report
+
+**Usage Patterns:**
+```
+www "task description"                    # low reasoning, workers output
+www medium "task description"             # medium reasoning, workers output
+www high workers "complex refactoring"    # high reasoning, workers output
+```
+
+**Monitoring:**
+```
+User: Check worker status
+Claude: [Uses BashOutput tool to show progress]
+```
+
+**When to Use:**
+- Long-running tasks (refactoring, analysis)
+- Want Claude to monitor worker progress
+- Need different reasoning levels for different tasks
+- Want ability to check status during execution
+
+**Example:**
+```
+User: www high "Refactor authentication system"
+Claude: 🚀 Starting worker job...
+        Job ID: bash_12346
+        Reasoning: high
+        Task: Refactor authentication system
+        Output: .mahirolab/workers/20251022_141500_TEMP_codex_task.md
+
+        ✅ Job running in background
+        Use "check status" to monitor progress
+```
+
+---
+
+### Monitoring Background Jobs
+
+**Check Status:**
+```
+User: Check [research/worker] status
+User: Show job status
+User: What's running?
+```
+
+**Claude Actions:**
+- Use `BashOutput` tool with stored bash_id
+- Display current progress and output
+- Show completion status
+- Provide file path when complete
+
+**Stop Job:**
+```
+User: Stop [research/worker]
+User: Cancel job
+```
+
+**Claude Actions:**
+- Use `KillShell` tool with bash_id
+- Confirm termination
+- Report final status
+
+---
+
 ## State Management
 
 ### Directory Structure

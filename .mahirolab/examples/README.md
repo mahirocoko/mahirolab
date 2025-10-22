@@ -81,6 +81,26 @@ Demonstrates:
 
 ---
 
+### 06 - Shortcode Integration (NEW)
+**File:** `06-shortcode-integration.md`
+**Focus:** Claude-managed background jobs using shortcodes
+**Use Case:** Interactive research and tasks with real-time monitoring
+**Runtime:** Variable (depends on task)
+
+Demonstrates:
+- `rrresearch` shortcode for Claude-managed research
+- `www` shortcode for Claude-managed workers
+- Real-time monitoring via BashOutput tool
+- Job control via KillShell tool
+- Comparison with direct scripts
+- Integration with Claude session
+
+**Key Difference:**
+- Shortcodes (`rrresearch`, `www`) = Visible in Claude UI, monitored by Claude
+- Direct scripts (`.sh` files) = Independent processes, manual monitoring
+
+---
+
 ## Running Examples
 
 ```bash

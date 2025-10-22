@@ -4,7 +4,7 @@
 
 | What You Need | Go To |
 | --- | --- |
-| **Quick start with shortcodes** (ccc, nnn, gogogo, rrr, lll) | [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md) |
+| **Quick start with shortcodes** (ccc, nnn, gogogo, rrr, lll, rrresearch, www) | [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md) |
 | **State management & session continuity** (versioning, progress tracking, analytics) | [`.mahirolab/docs/STATE_MANAGEMENT.md`](.mahirolab/docs/STATE_MANAGEMENT.md) |
 | **Complete project overview** (directory layout, all scripts, workflows) | [`.mahirolab/docs/PROJECT_STRUCTURE.md`](.mahirolab/docs/PROJECT_STRUCTURE.md) |
 | **Git commit standards** (conventional commits, emoji guide) | [`.mahirolab/docs/COMMIT_GUIDE.md`](.mahirolab/docs/COMMIT_GUIDE.md) |
@@ -259,11 +259,29 @@ Templates are **reference-only** and not automatically integrated with scripts. 
 
 For efficient collaboration between User and Claude, use **Shortcodes** defined in [`.mahirolab/docs/SHORTCODES.md`](.mahirolab/docs/SHORTCODES.md):
 
+### Core Workflow Shortcodes
 - **`ccc`** - Create context & compact conversation
 - **`nnn`** - Smart planning (auto-runs ccc if needed)
 - **`gogogo`** - Execute most recent plan
 - **`rrr`** - Create session retrospective
 - **`lll`** - List project status
+
+### Codex Integration Shortcodes (NEW)
+- **`rrresearch "topic"`** - Claude-managed research with web search
+  - Runs codex research in background with monitoring
+  - Always uses `medium` reasoning + web search enabled
+  - Output: `.mahirolab/research/YYYYMMDD_HHMMSS_PLACEHOLDER_codex_{topic}.md`
+  - Check status anytime with "check research status"
+
+- **`www [reasoning] "task"`** - Claude-managed background worker
+  - Runs codex worker in background with monitoring
+  - Reasoning levels: minimal | low (default) | medium | high
+  - Output: `.mahirolab/workers/YYYYMMDD_HHMMSS_TEMP_codex_task.md`
+  - Check status anytime with "check worker status"
+
+**Key Difference from Direct Scripts:**
+- `rrresearch` / `www` = Claude-managed (visible in Claude UI, can monitor/stop via BashOutput/KillShell)
+- `.mahirolab/bin/codex-*.sh` = Standalone (runs independent of Claude session)
 
 ### 🔴 CRITICAL SHORTCODE REQUIREMENT
 
