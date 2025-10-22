@@ -74,6 +74,13 @@ Pre-built workflow examples in [`.mahirolab/examples/`](.mahirolab/examples/):
 
 ⚠️ All scripts run with `danger-full-access` permissions. Use only in isolated development environments.
 
+## References
+
+This project builds upon and is inspired by:
+
+- **Documentation Guidelines** - https://github.com/laris-co/alchemist
+- **Codex Script Implementation** - https://github.com/laris-co/catlab-kit (Claude Code + Codex integration patterns)
+
 ## License
 
 MIT
