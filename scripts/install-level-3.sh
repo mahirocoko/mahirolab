@@ -261,6 +261,13 @@ EOF
         print_warning "Failed to install README.md (non-fatal)"
     fi
 
+    # Step 6: Update .gitignore
+    print_step "Updating .gitignore..."
+    update_gitignore "${INSTALL_DIR}" "${TEMPLATES_DIR}/gitignore-patterns.txt"
+    if [ $? -eq 0 ]; then
+        ((file_count++))
+    fi
+
     echo ""
     print_subsection "Installation Validation"
 

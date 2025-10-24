@@ -378,6 +378,55 @@ version_compare() {
 }
 
 #------------------------------------------------------------------------------
+# .gitignore update function
+#------------------------------------------------------------------------------
+
+update_gitignore() {
+    local install_dir="$1"
+    local patterns_file="${2:-${TEMPLATES_DIR}/gitignore-patterns.txt}"
+    local gitignore_file="${install_dir}/.gitignore"
+
+    # Check if patterns file exists
+    if [ ! -f "$patterns_file" ]; then
+        print_warning ".gitignore patterns file not found: $patterns_file"
+        return 1
+    fi
+
+    # Create .gitignore if it doesn't exist
+    if [ ! -f "$gitignore_file" ]; then
+        print_info "Creating new .gitignore file"
+        touch "$gitignore_file"
+    fi
+
+    # Check if Mahiro Lab section already exists
+    if grep -q "# Mahiro Lab - Codex Integration" "$gitignore_file" 2>/dev/null; then
+        print_info ".gitignore already contains Mahiro Lab patterns (skipping)"
+        return 0
+    fi
+
+    # Add a separator if file is not empty and doesn't end with newline
+    if [ -s "$gitignore_file" ]; then
+        # Check if file ends with newline
+        if [ "$(tail -c 1 "$gitignore_file" | wc -l)" -eq 0 ]; then
+            echo "" >> "$gitignore_file"
+        fi
+        echo "" >> "$gitignore_file"
+        echo "###############################################################################" >> "$gitignore_file"
+    fi
+
+    # Append Mahiro Lab patterns
+    cat "$patterns_file" >> "$gitignore_file"
+
+    if [ $? -eq 0 ]; then
+        print_success "Updated .gitignore with Mahiro Lab patterns"
+        return 0
+    else
+        print_error "Failed to update .gitignore"
+        return 1
+    fi
+}
+
+#------------------------------------------------------------------------------
 # Export all functions for use in other scripts
 #------------------------------------------------------------------------------
 
@@ -404,6 +453,7 @@ export -f show_progress
 export -f exit_with_error
 export -f cleanup_temp_files
 export -f version_compare
+export -f update_gitignore
 
 #------------------------------------------------------------------------------
 # End of helpers.sh

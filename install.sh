@@ -406,14 +406,14 @@ download_installation_files() {
     local claude_templates=()
     case $INSTALL_LEVEL in
         1)
-            claude_templates=("claude-level-1.md" "readme-level-1.md")
+            claude_templates=("claude-level-1.md" "readme-level-1.md" "gitignore-patterns.txt")
             ;;
         2)
-            claude_templates=("claude-level-2.md" "readme-level-2.md")
+            claude_templates=("claude-level-2.md" "readme-level-2.md" "gitignore-patterns.txt")
             ;;
         3)
             # Level 3 needs both Level 2 and Level 3 templates
-            claude_templates=("claude-level-2.md" "readme-level-2.md" "claude-level-3.md" "readme-level-3.md")
+            claude_templates=("claude-level-2.md" "readme-level-2.md" "claude-level-3.md" "readme-level-3.md" "gitignore-patterns.txt")
             ;;
     esac
 
