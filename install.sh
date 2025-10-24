@@ -24,7 +24,7 @@ RESET='\033[0m'
 INSTALL_LEVEL=2  # Default to Standard installation
 INSTALL_DIR="."  # Default to current directory
 DRY_RUN=false
-GITHUB_REPO="mahiro/mahiro-lab"  # Update this to actual repo
+GITHUB_REPO="mahirocoko/mahirolab"
 GITHUB_BRANCH="main"
 INSTALL_MODE="${INSTALL_MODE:-remote}"  # Can be overridden to "local" for testing
 
