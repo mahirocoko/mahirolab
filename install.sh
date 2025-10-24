@@ -412,7 +412,8 @@ download_installation_files() {
             claude_templates=("claude-level-2.md" "readme-level-2.md")
             ;;
         3)
-            claude_templates=("claude-level-3.md" "readme-level-3.md")
+            # Level 3 needs both Level 2 and Level 3 templates
+            claude_templates=("claude-level-2.md" "readme-level-2.md" "claude-level-3.md" "readme-level-3.md")
             ;;
     esac
 
