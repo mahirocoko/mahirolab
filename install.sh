@@ -393,52 +393,62 @@ download_installation_files() {
         fi
     done
 
-    # Get list of required templates based on level
-    local templates=()
+    # Download CLAUDE.md and README templates
+    local claude_templates=()
     case $INSTALL_LEVEL in
         1)
-            templates=(
-                "claude-level-1.md"
-                "readme-level-1.md"
-            )
+            claude_templates=("claude-level-1.md" "readme-level-1.md")
             ;;
         2)
-            templates=(
-                "claude-level-2.md"
-                "readme-level-2.md"
-                "SHORTCODES.md"
-                "STATE_MANAGEMENT.md"
-                "PROJECT_STRUCTURE.md"
-                "COMMIT_GUIDE.md"
-                "research-report.md"
-                "worker-task.md"
-                "code-review.md"
-            )
+            claude_templates=("claude-level-2.md" "readme-level-2.md")
             ;;
         3)
-            templates=(
-                "claude-level-3.md"
-                "readme-level-3.md"
-                "SHORTCODES.md"
-                "STATE_MANAGEMENT.md"
-                "PROJECT_STRUCTURE.md"
-                "COMMIT_GUIDE.md"
-                "research-report.md"
-                "worker-task.md"
-                "code-review.md"
-                "git-commit.md"
-                "git-commit-push.md"
-            )
+            claude_templates=("claude-level-3.md" "readme-level-3.md")
             ;;
     esac
 
-    # Download each template
-    for template in "${templates[@]}"; do
+    for template in "${claude_templates[@]}"; do
         local template_url=$(get_raw_url "scripts/shared/templates/${template}")
         if ! download_file "$template_url" "${TMP_DIR}/shared/templates/${template}"; then
             print_warning "Failed to download ${template} (non-fatal)"
         fi
     done
+
+    # Download docs files for Level 2 and 3
+    if [ "$INSTALL_LEVEL" -ge 2 ]; then
+        mkdir -p "${TMP_DIR}/.mahirolab/docs"
+        local docs_files=("SHORTCODES.md" "STATE_MANAGEMENT.md" "PROJECT_STRUCTURE.md" "COMMIT_GUIDE.md")
+        for doc in "${docs_files[@]}"; do
+            local doc_url=$(get_raw_url ".mahirolab/docs/${doc}")
+            if ! download_file "$doc_url" "${TMP_DIR}/.mahirolab/docs/${doc}"; then
+                print_warning "Failed to download ${doc} (non-fatal)"
+            fi
+        done
+    fi
+
+    # Download template files for Level 2 and 3
+    if [ "$INSTALL_LEVEL" -ge 2 ]; then
+        mkdir -p "${TMP_DIR}/.mahirolab/templates"
+        local template_files=("research-report.md" "worker-task.md" "code-review.md")
+        for tmpl in "${template_files[@]}"; do
+            local tmpl_url=$(get_raw_url ".mahirolab/templates/${tmpl}")
+            if ! download_file "$tmpl_url" "${TMP_DIR}/.mahirolab/templates/${tmpl}"; then
+                print_warning "Failed to download ${tmpl} (non-fatal)"
+            fi
+        done
+    fi
+
+    # Download git slash commands for Level 3
+    if [ "$INSTALL_LEVEL" -eq 3 ]; then
+        mkdir -p "${TMP_DIR}/.claude/commands/git"
+        local git_commands=("git-commit.md" "git-commit-push.md")
+        for cmd in "${git_commands[@]}"; do
+            local cmd_url=$(get_raw_url ".claude/commands/git/${cmd}")
+            if ! download_file "$cmd_url" "${TMP_DIR}/.claude/commands/git/${cmd}"; then
+                print_warning "Failed to download ${cmd} (non-fatal)"
+            fi
+        done
+    fi
 
     print_success "All files downloaded successfully"
 }
