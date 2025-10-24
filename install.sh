@@ -451,7 +451,7 @@ download_installation_files() {
     # Download git slash commands for Level 3
     if [ "$INSTALL_LEVEL" -eq 3 ]; then
         mkdir -p "${TMP_DIR}/.claude/commands/git"
-        local git_commands=("git-commit.md" "git-commit-push.md")
+        local git_commands=("commit.md" "commit-push.md")
         for cmd in "${git_commands[@]}"; do
             local cmd_url=$(get_raw_url ".claude/commands/git/${cmd}")
             if ! download_file "$cmd_url" "${TMP_DIR}/.claude/commands/git/${cmd}"; then
