@@ -97,9 +97,12 @@ install_level_3() {
                 "codex-cleanup.sh"
             )
 
-            local source_bin_dir
+            # Try multiple possible locations for bin directory
+            local source_bin_dir=""
             if [ -d "${SCRIPT_DIR}/../.mahirolab/bin" ]; then
                 source_bin_dir="${SCRIPT_DIR}/../.mahirolab/bin"
+            elif [ -d "${SCRIPT_DIR}/.mahirolab/bin" ]; then
+                source_bin_dir="${SCRIPT_DIR}/.mahirolab/bin"
             elif [ -d ".mahirolab/bin" ]; then
                 source_bin_dir=".mahirolab/bin"
             else
@@ -122,9 +125,12 @@ install_level_3() {
                 "COMMIT_GUIDE.md"
             )
 
-            local source_docs_dir
+            # Try multiple possible locations for docs directory
+            local source_docs_dir=""
             if [ -d "${SCRIPT_DIR}/../.mahirolab/docs" ]; then
                 source_docs_dir="${SCRIPT_DIR}/../.mahirolab/docs"
+            elif [ -d "${SCRIPT_DIR}/.mahirolab/docs" ]; then
+                source_docs_dir="${SCRIPT_DIR}/.mahirolab/docs"
             elif [ -d ".mahirolab/docs" ]; then
                 source_docs_dir=".mahirolab/docs"
             else
@@ -145,9 +151,12 @@ install_level_3() {
                 "code-review.md"
             )
 
-            local source_templates_dir
+            # Try multiple possible locations for templates directory
+            local source_templates_dir=""
             if [ -d "${SCRIPT_DIR}/../.mahirolab/templates" ]; then
                 source_templates_dir="${SCRIPT_DIR}/../.mahirolab/templates"
+            elif [ -d "${SCRIPT_DIR}/.mahirolab/templates" ]; then
+                source_templates_dir="${SCRIPT_DIR}/.mahirolab/templates"
             elif [ -d ".mahirolab/templates" ]; then
                 source_templates_dir=".mahirolab/templates"
             else
@@ -216,9 +225,12 @@ EOF
         "commit-push.md"
     )
 
-    local source_git_dir
+    # Try multiple possible locations for git commands
+    local source_git_dir=""
     if [ -d "${SCRIPT_DIR}/../.claude/commands/git" ]; then
         source_git_dir="${SCRIPT_DIR}/../.claude/commands/git"
+    elif [ -d "${SCRIPT_DIR}/.claude/commands/git" ]; then
+        source_git_dir="${SCRIPT_DIR}/.claude/commands/git"
     elif [ -d ".claude/commands/git" ]; then
         source_git_dir=".claude/commands/git"
     else
