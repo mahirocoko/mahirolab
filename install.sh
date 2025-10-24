@@ -352,6 +352,15 @@ download_installation_files() {
     fi
     chmod +x "${TMP_DIR}/install-level-${INSTALL_LEVEL}.sh"
 
+    # Level 3 needs Level 2 installer as well
+    if [ "$INSTALL_LEVEL" -eq 3 ]; then
+        print_info "Downloading install-level-2.sh (required by Level 3)..."
+        if ! download_file "$(get_raw_url 'scripts/install-level-2.sh')" "${TMP_DIR}/install-level-2.sh"; then
+            exit_with_error "Failed to download install-level-2.sh"
+        fi
+        chmod +x "${TMP_DIR}/install-level-2.sh"
+    fi
+
     # Download helpers
     print_info "Downloading shared helpers..."
     if ! download_file "$(get_raw_url 'scripts/shared/helpers.sh')" "${TMP_DIR}/helpers.sh"; then
