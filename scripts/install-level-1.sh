@@ -59,9 +59,12 @@ install_level_1() {
     # Step 2: Install codex-exec.sh from source
     print_step "Installing codex-exec.sh..."
 
-    local source_bin_dir
+    # Try multiple possible locations for source bin directory
+    local source_bin_dir=""
     if [ -d "${SCRIPT_DIR}/../.mahirolab/bin" ]; then
         source_bin_dir="${SCRIPT_DIR}/../.mahirolab/bin"
+    elif [ -d "${SCRIPT_DIR}/.mahirolab/bin" ]; then
+        source_bin_dir="${SCRIPT_DIR}/.mahirolab/bin"
     elif [ -d ".mahirolab/bin" ]; then
         source_bin_dir=".mahirolab/bin"
     else

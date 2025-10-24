@@ -365,6 +365,33 @@ download_installation_files() {
     # Download templates based on level
     print_info "Downloading templates..."
     mkdir -p "${TMP_DIR}/shared/templates"
+    mkdir -p "${TMP_DIR}/.mahirolab/bin"
+
+    # Download bin scripts first (needed by all levels)
+    local bin_scripts=()
+    case $INSTALL_LEVEL in
+        1)
+            bin_scripts=("codex-exec.sh" "codex-research.sh")
+            ;;
+        2|3)
+            bin_scripts=(
+                "codex-exec.sh"
+                "codex-research.sh"
+                "codex-worker-launcher.sh"
+                "codex-status.sh"
+                "codex-cleanup.sh"
+            )
+            ;;
+    esac
+
+    for script in "${bin_scripts[@]}"; do
+        local script_url=$(get_raw_url ".mahirolab/bin/${script}")
+        if download_file "$script_url" "${TMP_DIR}/.mahirolab/bin/${script}"; then
+            chmod +x "${TMP_DIR}/.mahirolab/bin/${script}"
+        else
+            print_warning "Failed to download ${script} (non-fatal)"
+        fi
+    done
 
     # Get list of required templates based on level
     local templates=()
@@ -372,20 +399,13 @@ download_installation_files() {
         1)
             templates=(
                 "claude-level-1.md"
-                "readme-template.md"
-                "codex-exec.sh"
-                "codex-research.sh"
+                "readme-level-1.md"
             )
             ;;
         2)
             templates=(
                 "claude-level-2.md"
-                "readme-template.md"
-                "codex-exec.sh"
-                "codex-research.sh"
-                "codex-worker-launcher.sh"
-                "codex-status.sh"
-                "codex-cleanup.sh"
+                "readme-level-2.md"
                 "SHORTCODES.md"
                 "STATE_MANAGEMENT.md"
                 "PROJECT_STRUCTURE.md"
@@ -398,12 +418,7 @@ download_installation_files() {
         3)
             templates=(
                 "claude-level-3.md"
-                "readme-template.md"
-                "codex-exec.sh"
-                "codex-research.sh"
-                "codex-worker-launcher.sh"
-                "codex-status.sh"
-                "codex-cleanup.sh"
+                "readme-level-3.md"
                 "SHORTCODES.md"
                 "STATE_MANAGEMENT.md"
                 "PROJECT_STRUCTURE.md"
