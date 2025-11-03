@@ -2,6 +2,7 @@
 .mahirolab/workers/
 .mahirolab/research/
 .mahirolab/state/
+.mahirolab/medium/
 
 # Keep documentation, scripts, examples, and templates visible in git
 !.mahirolab/docs/

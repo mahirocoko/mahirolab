@@ -94,10 +94,11 @@ mkdir -p ".mahirolab/${OUTPUT_TYPE}"
 TEMPLATE_FILE=".mahirolab/templates/worker-task.md"
 if [ -f "$TEMPLATE_FILE" ]; then
     TEMPLATE_CONTENT=$(cat "$TEMPLATE_FILE")
-    # Replace placeholders that we know now
-    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{TASK_DESCRIPTION}}|${TASK}|g")
-    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{START_TIME}}|${START_TIME}|g")
-    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s|{{REASONING_LEVEL}}|${REASONING}|g")
+    # Replace placeholders that we know now - use perl for multiline safety
+    TASK_ESCAPED=$(printf '%s\n' "$TASK" | perl -pe 's/([\\\/\$\@\%])/\\$1/g')
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | perl -pe "s/\{\{TASK_DESCRIPTION\}\}/${TASK_ESCAPED}/g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | perl -pe "s/\{\{START_TIME\}\}/${START_TIME}/g")
+    TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | perl -pe "s/\{\{REASONING_LEVEL\}\}/${REASONING}/g")
     # Leave END_TIME, DURATION, WORKER_PID, EXIT_CODE for Codex to fill
     USE_TEMPLATE=true
     echo -e "${GREEN}✓ Template loaded: ${TEMPLATE_FILE}${NC}"
@@ -146,12 +147,19 @@ fi
 
 # Launch Codex in background and capture bash ID
 echo -e "${CYAN}Launching background process...${NC}"
-BASH_ID=$(bash -c "
-codex exec -s danger-full-access -c model_reasoning_effort='${REASONING}' '${PROMPT}' &
-echo \$!
-" 2>/dev/null | tail -1)
 
-echo -e "${BLUE}📋 Background process started with bash ID: ${BASH_ID}${NC}"
+# Write prompt to temp file to avoid quoting issues
+PROMPT_FILE="/tmp/codex_prompt_$$.txt"
+echo "$PROMPT" > "$PROMPT_FILE"
+
+# Launch background process and capture PID directly
+codex exec -s danger-full-access -c model_reasoning_effort="${REASONING}" "$(cat "$PROMPT_FILE")" > /dev/null 2>&1 &
+BASH_ID=$!
+
+# Clean up prompt file
+rm -f "$PROMPT_FILE"
+
+echo -e "${BLUE}📋 Background process started with PID: ${BASH_ID}${NC}"
 
 # Create proper filename with real bash ID
 FINAL_FILE=".mahirolab/${OUTPUT_TYPE}/${TIMESTAMP}_${BASH_ID}_codex_task.md"

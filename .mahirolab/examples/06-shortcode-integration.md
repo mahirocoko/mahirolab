@@ -357,4 +357,4 @@ Choose shortcodes for interactive work, direct scripts for automation.
 
 ---
 
-*Example Version: 1.0.0 | Updated: 2025-10-22*
+*Example Version: 1.0.0 | Updated: 2025-10-24*

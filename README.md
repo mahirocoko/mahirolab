@@ -1,9 +1,57 @@
 # Mahiro Lab - Claude-Codex Orchestrator
 
-A powerful automation framework for orchestrating Claude AI tasks using direct process execution.
+A powerful automation framework for orchestrating Claude AI tasks using direct process execution with a modular tiered installation system.
+
+## Installation
+
+Choose your installation level:
+
+### Level 1 - Minimal
+Basic codex scripts for quick start (4 files)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=1
+```
+
+### Level 2 - Standard (Recommended)
+Full `.mahirolab` structure with state management (15+ files)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=2
+```
+
+### Level 3 - Full
+Everything in Level 2 + Git conventions and slash commands (17+ files)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=3
+```
+
+### Installation Options
+
+```bash
+# Install to specific directory
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=2 --dir=~/my-project
+
+# Dry run (preview without installing)
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=2 --dry-run
+
+# Show help
+curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --help
+```
 
 ## Quick Start
 
+### Level 1 (Minimal)
+```bash
+# Run a quick task
+./codex-exec.sh "List all TypeScript files"
+
+# Research with web search
+./codex-research.sh "Latest React 19 features"
+```
+
+### Level 2+ (Standard/Full)
 ```bash
 # Run a quick task
 .mahirolab/bin/codex-exec.sh "List all TypeScript files"
@@ -15,7 +63,30 @@ A powerful automation framework for orchestrating Claude AI tasks using direct p
 .mahirolab/bin/codex-worker-launcher.sh high "Refactor authentication system"
 ```
 
-## Shortcodes
+## What's Included
+
+### Level 1 - Minimal
+- `CLAUDE.md` - Simplified usage guide
+- `README.md` - Installation documentation
+- `codex-exec.sh` - Quick task execution
+- `codex-research.sh` - Web-enabled research
+- `codex_output/` - Research output directory
+
+### Level 2 - Standard
+Everything in Level 1 plus:
+- **Full `.mahirolab/` structure** - Complete directory organization
+- **5 Codex scripts** - exec, research, worker-launcher, status, cleanup
+- **Documentation** - SHORTCODES.md, STATE_MANAGEMENT.md, PROJECT_STRUCTURE.md, COMMIT_GUIDE.md
+- **Templates** - research-report.md, worker-task.md, code-review.md
+- **State management** - Session continuity and progress tracking
+
+### Level 3 - Full
+Everything in Level 2 plus:
+- **Git conventions** - COMMIT_GUIDE.md
+- **Slash commands** - `/git:commit`, `/git:commit-push`
+- **Team workflows** - Complete collaboration setup
+
+## Shortcodes (Level 2+)
 
 Fast workflow management using communication protocol:
 
@@ -26,7 +97,7 @@ Fast workflow management using communication protocol:
 - **`rrr`** - Create session retrospective
 - **`lll`** - List project status
 
-### Codex Integration (NEW)
+### Codex Integration
 - **`rrresearch "topic"`** - Claude-managed research with web search
 - **`www [reasoning] "task"`** - Claude-managed background worker
 
@@ -70,9 +141,20 @@ Pre-built workflow examples in [`.mahirolab/examples/`](.mahirolab/examples/):
 .mahirolab/examples/05-sequential-pipeline.sh
 ```
 
+## Features
+
+✨ **Modular Installation** - Choose the right level for your needs
+🚀 **One-line Install** - Get started in seconds with curl
+📊 **State Management** - Session continuity and progress tracking (Level 2+)
+🔄 **Background Workers** - Long-running tasks with monitoring
+🔍 **Web Research** - AI-powered research with citations
+📝 **Shortcode Protocol** - Fast workflow management (Level 2+)
+🎯 **Git Integration** - Automated commit workflows (Level 3)
+
 ## Safety Notice
 
-⚠️ All scripts run with `danger-full-access` permissions. Use only in isolated development environments.
+⚠️ **All scripts run with `danger-full-access` permissions.**
+Use only in isolated development environments. Never run on production systems or with sensitive data.
 
 ## References
 

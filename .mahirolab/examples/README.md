@@ -1,19 +1,15 @@
 # Codex Examples Library
 
-Collection of example scripts demonstrating common workflows and best practices.
+Collection of example documentation demonstrating common workflows and best practices.
 
 ## Quick Start
 
-All examples are executable bash scripts. Make them executable first:
-
-```bash
-chmod +x examples/*.sh
-```
+All examples are now in markdown format for better documentation and readability. Browse them directly or reference them when building your own workflows.
 
 ## Examples Overview
 
 ### 01 - Quick Task Execution
-**File:** `01-quick-task.sh`
+**File:** `01-quick-task.md`
 **Focus:** Basic synchronous task execution
 **Use Case:** Quick fixes, file listings, simple edits
 **Runtime:** < 30 seconds
@@ -26,7 +22,7 @@ Demonstrates:
 ---
 
 ### 02 - Research Workflow
-**File:** `02-research-workflow.sh`
+**File:** `02-research-workflow.md`
 **Focus:** Web-enabled research with structured reports
 **Use Case:** Technology research, comparisons, documentation discovery
 **Runtime:** 1-3 minutes per topic
@@ -40,7 +36,7 @@ Demonstrates:
 ---
 
 ### 03 - Parallel Background Workers
-**File:** `03-parallel-workers.sh`
+**File:** `03-parallel-workers.md`
 **Focus:** Running multiple tasks concurrently
 **Use Case:** Independent tasks, code analysis, batch processing
 **Runtime:** Depends on task complexity
@@ -54,7 +50,7 @@ Demonstrates:
 ---
 
 ### 04 - Mixed Reasoning Levels
-**File:** `04-mixed-reasoning-levels.sh`
+**File:** `04-mixed-reasoning-levels.md`
 **Focus:** Choosing appropriate reasoning levels
 **Use Case:** Optimizing speed vs quality tradeoff
 **Runtime:** ~2-3 minutes total
@@ -68,7 +64,7 @@ Demonstrates:
 ---
 
 ### 05 - Sequential Pipeline
-**File:** `05-sequential-pipeline.sh`
+**File:** `05-sequential-pipeline.md`
 **Focus:** Chaining dependent tasks
 **Use Case:** Multi-step workflows, project scaffolding
 **Runtime:** 3-5 minutes
@@ -101,19 +97,27 @@ Demonstrates:
 
 ---
 
-## Running Examples
+## Using Examples
+
+All examples are now comprehensive markdown documentation. You can:
 
 ```bash
-# Run a specific example
-./examples/01-quick-task.sh
+# Browse examples
+ls .mahirolab/examples/*.md
 
-# Run all examples (may take 10-15 minutes)
-for script in examples/*.sh; do
-    echo "Running $script..."
-    bash "$script"
-    echo "---"
-done
+# Read a specific example
+cat .mahirolab/examples/01-quick-task.md
+
+# Open in your favorite editor/viewer
+code .mahirolab/examples/01-quick-task.md
 ```
+
+Each example contains:
+- Overview and use cases
+- Code examples you can copy and run
+- Best practices and tips
+- Troubleshooting guides
+- Advanced patterns
 
 ## Best Practices Learned
 
@@ -138,45 +142,66 @@ done
 
 ## Creating Your Own Examples
 
-Template for new examples:
+Template for new markdown examples:
 
-```bash
-#!/bin/bash
-# Example N: [Title]
-# [Brief description]
+```markdown
+# Example NN: [Title]
 
-echo "=== Example N: [Title] ==="
-echo ""
-echo "[Detailed description]"
-echo ""
+Brief introduction explaining what this example demonstrates.
 
-# Your codex commands here
-./codex-exec.sh "Your task"
+## Overview
 
-echo ""
-echo "✅ Example completed!"
-echo ""
-echo "💡 Tips:"
-echo "  - [Tip 1]"
-echo "  - [Tip 2]"
+Key points:
+- ✅ Feature 1
+- ✅ Feature 2
+
+## Basic Usage
+
+### Example Command
+
+\`\`\`bash
+./.mahirolab/bin/codex-exec.sh "Your task"
+\`\`\`
+
+## Features
+
+Detailed explanations, tables, code blocks
+
+## When to Use
+
+✅ Use when:
+❌ Don't use when:
+
+## Tips & Tricks
+
+Practical tips and best practices
+
+## Summary
+
+Brief recap
+
+---
+
+*Example Version: 1.0.0 | Updated: YYYY-MM-DD*
 ```
 
 ## Next Steps
 
 - Review `CLAUDE.md` for architecture overview
-- Use `--help` flag on any script for detailed usage
-- Combine examples to create custom workflows
+- Browse individual examples for detailed patterns
+- Use helper scripts in `.mahirolab/bin/` for automation
+- Combine patterns to create custom workflows
 
 ## Troubleshooting
-
-**Issue:** Permission denied
-**Fix:** `chmod +x examples/*.sh`
 
 **Issue:** codex command not found
 **Fix:** Ensure Codex CLI is installed and in PATH
 
 **Issue:** Slow performance
 **Fix:** Lower reasoning level or reduce parallel workers
+
+**Issue:** Want executable examples
+**Fix:** Code examples in markdown files are ready to copy and execute
 
 ---
 
