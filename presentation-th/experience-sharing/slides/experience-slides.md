@@ -7,6 +7,8 @@ color: #333333
 style: |
   section {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.3em;
+    line-height: 1;
   }
   h1 {
     color: #2563eb;
@@ -398,19 +400,135 @@ Claude: *สรุปผล + lessons learned*
 
 ---
 
-## 🏗️ เกิด Codex: Context Manager สำหรับ Claude Code
+## 🏗️ mahirolab: Orchestration System for AI Workers
 
 **คอนเซปต์:**
 > "ถ้าปัญหาคือ Context Management... เราก็สร้างระบบจัดการ Context สิ!"
 
-**Codex คืออะไร?**
-- 🤖 Orchestrator สำหรับ Claude Agents หลายตัว
+**mahirolab + Codex CLI คืออะไร?**
+- 🤖 **Codex CLI** = AI command-line tool สำหรับ background tasks
+- 🎯 **mahirolab scripts** = orchestration system ให้ Claude Code สั่งงาน Codex workers
 - 📝 State Management System (context versioning, progress tracking)
 - 🔄 Background Workers with monitoring
 - 📊 Research mode พร้อม web search
 - 🎯 Shortcodes สำหรับ workflow ที่ซ้ำๆ
 
-**เป้าหมาย:** ทำให้ Context Management เป็นเรื่องง่าย ✨
+**Architecture:**
+> **Claude Code** = Orchestrator/หัวหน้างาน
+>
+> **Codex CLI** = Background Worker/ลูกน้อง
+
+**เป้าหมาย:** ให้ Claude Code orchestrate Codex workers อย่างมีประสิทธิภาพ! ✨
+
+---
+
+## 🤝 Core Concept: Orchestrator-Worker Pattern
+
+```
+User (คุณ)
+  ↓
+  "ฉันต้องการ X"
+  ↓
+Claude Code (Orchestrator = หัวหน้างาน)
+  ↓
+  [ตัดสินใจ: ทำเองหรือ delegate?]
+  ↓                                        ↓
+Direct Execution                   Codex Worker (via CLI)
+(งานเร็ว, ง่าย)                     (งานซับซ้อน, นาน, background)
+  ↓                                        ↓
+ผลลัพธ์ทันที                        ทำงาน background → Report กลับ
+```
+
+**หลักการ:**
+- งานเล็ก → Claude Code ทำเอง (synchronous)
+- งานใหญ่ → delegate ให้ Codex worker (asynchronous)
+
+**Key Insight:**
+> Claude Code orchestrates Codex workers via mahirolab scripts!
+
+---
+
+## 🎯 Delegation Criteria: เมื่อไหร่ควร Direct? เมื่อไหร่ควร Delegate?
+
+| ประเภทงาน | Claude Direct ✅ | Codex Worker 🤖 | เหตุผล |
+|----------|-----------------|----------------|---------|
+| **Quick edit** (1-2 ไฟล์) | ✅ Fast | ❌ Overkill | Interactive ดีกว่า |
+| **Research หัวข้อใหม่** | ❌ No web search | ✅ `rrresearch` | ต้อง web search |
+| **Long analysis** | ❌ ต้องรอนาน | ✅ `www high` | Background ดีกว่า |
+| **Planning** | ✅ `nnn` | ❌ ต้อง interactive | ต้องคุยไปคุยมา |
+| **Context summary** | ✅ `ccc` | ❌ ต้อง interactive | ต้องยืนยัน |
+| **Refactor ใหญ่** | ❌ ใช้เวลานาน | ✅ `www medium` | Complexity สูง |
+| **Generate test suite** | ❌ ใช้เวลานาน | ✅ `www low/medium` | Pattern ชัดเจน |
+| **Documentation** (สั้น) | ✅ ถ้า < 5 นาที | ❌ Overkill | Quick task |
+| **Documentation** (ยาว/research) | ❌ ต้อง research | ✅ `rrresearch` + `www` | ต้องรวบรวมข้อมูล |
+| **Large-scale debugging** | ❌ ต้อง interactive | ✅ Log analysis `www` | วิเคราะห์ logs ใหญ่ |
+| **Data migration script** | ⚠️ Review ก่อน | ✅ Generate `www high` | Risk สูง แต่ช่วยได้ |
+| **Mixed: Research + Fix** | ❌ ต้องแยกขั้นตอน | ✅ `rrresearch` → review → `www` | Sequential workflow |
+
+**กฎทอง:**
+- ⚡ เร็ว (< 5 นาที) + interactive = Claude Code ทำเอง
+- 🕐 นาน (> 15 นาที) + ซับซ้อน = delegate to Codex worker
+- 🔍 ต้อง web search = `rrresearch` (Codex + web)
+- 🤖 Background + monitoring = `www [level]` (Codex background)
+
+**📊 Reasoning Level Guide:**
+
+| Level | เหมาะกับ | เวลา | ค่าใช้จ่าย | เมื่อไหร่ใช้ |
+|-------|---------|------|-----------|------------|
+| **minimal** | งานซ้ำๆ pattern ชัด | 5-10 นาที | 💰 | ไม่แนะนำใช้บ่อย |
+| **low** | Simple tasks, quick edits | 10-15 นาที | 💰💰 | Default สำหรับงานง่าย |
+| **medium** | Moderate complexity | 15-30 นาที | 💰💰💰 | **แนะนำ - balance ดี** |
+| **high** | Complex refactor, architecture | 30-60+ นาที | 💰💰💰💰 | งานซับซ้อนเท่านั้น |
+
+**💡 Tips:**
+- เริ่มจาก `low` → ถ้าผลลัพธ์ไม่ดี → ลอง `medium`
+- งานที่ต้องคิดมาก = `high`
+- งานที่มี pattern ชัดเจน = `low/medium`
+
+---
+
+## 🎯 Real Example: Refactor Billing API
+
+**สถานการณ์:** ต้อง refactor billing API ให้ใช้ async/await
+
+```bash
+# 1️⃣ User Request
+You: "Refactor billing API to use async/await pattern"
+
+# 2️⃣ Claude Analyzes
+Claude: 🤔 "Hmm... let me think:
+         - ไฟล์เกี่ยวข้อง: ~5-6 ไฟล์
+         - Complexity: กลาง-สูง
+         - Time: คาดว่า 30-45 นาที
+         - Need tests? ใช่
+         → นี่คือ DELEGATE case!"
+
+# 3️⃣ Decision Made
+Claude Code: ✅ "I'll delegate this to Codex worker"
+
+# 4️⃣ Execute
+Claude Code: 'www medium "Refactor billing API to async/await:
+              - Update src/billing/*.ts
+              - Maintain backward compatibility
+              - Add tests for async flows
+              - Update error handling"'
+
+# 5️⃣ Worker Running
+Codex Worker: 🔄 Running in background...
+              File: .mahirolab/workers/20251104_143500_12345_codex_task.md
+
+# 6️⃣ Monitor Progress
+You: "Check status?"
+Claude: → Uses BashOutput tool
+        → "✅ Done! Refactored 6 files, added 12 tests"
+
+# 7️⃣ Integration
+Claude: → Reviews output
+        → Summarizes changes
+        → Ready for your review! 🎉
+```
+
+**Key Insight:** Decision-making + delegation + monitoring = scalable workflow! 🚀
 
 ---
 
@@ -423,8 +541,9 @@ Claude: *สรุปผล + lessons learned*
 | ⏰ **Time Sink Paradox** | Background workers → ทำงานต่อไม่ต้องรอ |
 | 🔀 **Context Switching Hell** | Session continuity → context versioning |
 | 🎲 **Unpredictability** | Reasoning levels ชัดเจน + template injection |
+| 🤷 **Orchestration Confusion** | Delegation criteria + monitoring tools |
 
-**สรุป:** Codex = Context Management Principles ที่เป็นจริง! 🎯
+**สรุป:** mahirolab + Codex CLI = ให้ Claude Code orchestrate workers ได้อย่างมีระบบ! 🎯
 
 ---
 
@@ -433,24 +552,30 @@ Claude: *สรุปผล + lessons learned*
 ```
 You (Human)
   ↓
-  ├─ [Shortcodes: ccc, nnn, gogogo, rrr]
+  ├─ [Shortcodes: ccc, nnn, gogogo, rrr, rrresearch, www]
   ↓
-Claude (Orchestrator)
+Claude Code - Anthropic AI (Orchestrator/หัวหน้างาน)
   ↓
-  ├─ State Management (.mahirolab/state/)
-  │  ├─ context.md
-  │  ├─ plans/
-  │  ├─ progress.md
-  │  └─ execution_log.md
-  ↓
-  ├─ Workers (.mahirolab/workers/)
-  │  └─ Background jobs with PID tracking
-  ↓
-  └─ Research (.mahirolab/research/)
-     └─ Web-enabled research reports
+  ├─ Decision: Direct or Delegate?
+  │
+  ├─ [Direct Path - Claude Code ทำเอง]
+  │  ├─ State Management (.mahirolab/state/)
+  │  │  ├─ context.md
+  │  │  ├─ plans/
+  │  │  ├─ progress.md
+  │  │  └─ execution_log.md
+  │
+  └─ [Delegate Path → Codex Workers]
+     ├─ Workers (.mahirolab/workers/)
+     │  └─ Background jobs (Codex) with PID tracking
+     └─ Research (.mahirolab/research/)
+        └─ Web-enabled research (Codex + web search)
 ```
 
-**หลักการ:** แยก concerns, explicit state, reproducible workflows
+**หลักการ:**
+- **Claude Code** = orchestrator
+- **Codex CLI** = background workers
+- แยก concerns, explicit state, reproducible workflows
 
 ---
 
@@ -484,6 +609,39 @@ Claude: → สร้าง retrospective.md (what went well, learnings)
 
 ---
 
+## 🎬 Demo: Orchestration in Action
+
+**สถานการณ์:** User ถามคำถามซับซ้อน → Claude ตัดสินใจ delegate
+
+```bash
+# User ถามคำถามที่ต้อง research
+You: "What are the new features in React 19?"
+
+# Claude analyzes → ตัดสินใจ
+Claude: 🤔 "นี่ต้อง web search + analysis...
+         ควร delegate ให้ Codex!"
+
+# Orchestrator สั่งงาน Worker
+Claude: 'rrresearch "React 19 new features"'
+        → Codex รับงาน
+        → รัน web search + analysis
+        → ทำงาน background (ไม่ block)
+
+# Claude monitor progress
+You: "Check status?"
+Claude: → BashOutput tool
+        → "In progress... 60% done"
+
+# Worker เสร็จ → report กลับ
+Claude: ✅ "Done! Report: .mahirolab/research/..."
+        → สรุปผลให้ User
+        → Integrate knowledge ลง context
+```
+
+**Key point:** Claude = decision maker, Codex = executor 🎯
+
+---
+
 ## 🚀 Bonus: Research & Workers
 
 **Research Mode:**
@@ -503,6 +661,29 @@ Claude: → รัน codex worker ใน background
 ```
 
 **คุณค่า:** Scale up without losing control! 💪
+
+---
+
+## 🔄 What Codex Changes in Daily Work
+
+**Before Codex:**
+- 💬 คุย กับ Claude ไปเรื่อยๆ ไม่มีโครงสร้าง
+- 😵 Context หาย → เริ่มใหม่บ่อย
+- ❓ ไม่รู้ว่าทำไปถึงไหน
+- ⏰ ต้องรอ Claude ทำเสร็จ ไม่สามารถทำอย่างอื่นได้
+
+**After mahirolab (Claude + Codex integration):**
+- ✅ มี workflow ชัดเจน (`ccc` → `nnn` → `gogogo`)
+- 📝 Context persist ข้าม sessions (versioning)
+- 📊 Track progress แบบ real-time
+- 🤖 Delegate งานหนักให้ Codex workers (background)
+- 🔍 Research พร้อม web search (`rrresearch` → Codex + web)
+- 🎯 Decision-making เป็นระบบ (delegation criteria)
+
+**ผลลัพธ์:**
+> ทำงานเป็นระบบมากขึ้น, คุมได้มากขึ้น, scale ได้มากขึ้น! ✨
+
+**แต่... มันก็มีบทเรียนที่ต้องเรียนรู้** →
 
 ---
 
@@ -706,6 +887,26 @@ Should I automate this?
 > "Codex ไม่ perfect... แต่มันทำให้ทำงานกับ Claude Code สบายขึ้น
 
 มาก." 💙
+
+---
+
+## 🤔 Ready to Try This Yourself?
+
+**ถามตัวเองก่อนลองใช้:**
+
+- ✋ งานของคุณมี **repetitive patterns** ไหม?
+- 🤖 ทำงานกับ AI **บ่อยแค่ไหน**? (ทุกวัน? ทุกสัปดาห์?)
+- 😵 เคย **context หาย** บ่อยไหม?
+- ⏰ อยากให้ AI **ทำงาน background** ได้ไหม?
+- 📊 อยากมี **progress tracking** ไหม?
+
+**ถ้าตอบ "ใช่" ≥ 3 ข้อ →**
+> Codex อาจเหมาะกับคุณ! 💡
+
+**ถ้าตอบ "ใช่" < 3 ข้อ →**
+> อาจยังไม่จำเป็นต้องใช้ (ใช้ Claude Code ธรรมดาก็พอ)
+
+**มาดูกันว่าจะเริ่มต้นยังไง** →
 
 ---
 
