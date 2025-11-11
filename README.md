@@ -40,6 +40,38 @@ curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh
 curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --help
 ```
 
+## Git Hooks Setup
+
+After installation, configure git hooks to enforce clean commit messages:
+
+### Install Commit Validation Hook
+
+```bash
+# Install the commit-msg hook (automatic backup)
+.mahirolab/bin/install-git-hooks.sh
+
+# Force install without prompts
+.mahirolab/bin/install-git-hooks.sh --force
+
+# Skip backup creation
+.mahirolab/bin/install-git-hooks.sh --no-backup
+```
+
+### What the Hook Does
+
+The `commit-msg` hook automatically validates commit messages and blocks:
+
+- AI attribution patterns (`"Generated with Claude"`, `"🤖 Generated"`)
+- Bot signatures (`"Co-Authored-By: Claude"`, `"noreply@anthropic"`)
+- Domain references (`"claude.com"`, `"anthropic.com"`)
+- Generic AI mentions (`"AI generated"`, `"Assisted by"`)
+
+**Test the hook:**
+```bash
+git commit -m "🤖 Generated with Claude: test message"
+# ❌ This will be REJECTED
+```
+
 ## Quick Start
 
 ### Level 1 (Minimal)
@@ -122,6 +154,7 @@ Located in `.mahirolab/bin/`:
 - **`codex-worker-launcher.sh`** - Background workers with PID tracking
 - **`codex-status.sh`** - Job monitoring dashboard
 - **`codex-cleanup.sh`** - Automated cleanup utility
+- **`install-git-hooks.sh`** - Git hooks installation and validation
 
 ## Examples
 
@@ -149,7 +182,8 @@ Pre-built workflow examples in [`.mahirolab/examples/`](.mahirolab/examples/):
 🔄 **Background Workers** - Long-running tasks with monitoring
 🔍 **Web Research** - AI-powered research with citations
 📝 **Shortcode Protocol** - Fast workflow management (Level 2+)
-🎯 **Git Integration** - Automated commit workflows (Level 3)
+🎯 **Git Integration** - Automated commit workflows and validation (Level 3)
+🛡️ **Commit Validation** - AI attribution blocking with git hooks
 
 ## Safety Notice
 
