@@ -157,7 +157,7 @@ fi
 
 # Execute Codex research with structured prompt
 codex exec -s danger-full-access \
-  -c 'tools.web_search=true' \
+  --enable web_search_request \
   -c model_reasoning_effort="medium" \
   "$PROMPT"
 
