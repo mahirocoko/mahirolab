@@ -112,6 +112,8 @@ ${BOLD}INSTALLATION LEVELS:${RESET}
     ${BOLD}Level 3 - Full${RESET}
     ├── All from Level 2, plus:
     ├── .mahirolab/docs/COMMIT_GUIDE.md
+    ├── .mahirolab/bin/install-git-hooks.sh
+    ├── .mahirolab/templates/git-hooks/commit-msg
     └── .claude/commands/git/ (commit.md, commit-push.md)
 
 ${BOLD}EXAMPLES:${RESET}
@@ -230,6 +232,9 @@ show_dry_run() {
             echo "  📄 CLAUDE.md (full version)"
             echo "  📄 README.md (generated)"
             echo "  📁 .mahirolab/ (full structure from Level 2)"
+            echo "     📄 bin/install-git-hooks.sh"
+            echo "     📁 templates/git-hooks/"
+            echo "        📄 commit-msg"
             echo "  📁 .claude/commands/git/"
             echo "     📄 commit.md"
             echo "     📄 commit-push.md"
@@ -246,7 +251,7 @@ count_files_for_level() {
     case $1 in
         1) echo "4" ;;
         2) echo "15" ;;
-        3) echo "18" ;;
+        3) echo "21" ;;
     esac
 }
 
@@ -389,6 +394,7 @@ download_installation_files() {
                 "codex-worker-launcher.sh"
                 "codex-status.sh"
                 "codex-cleanup.sh"
+                "install-git-hooks.sh"
             )
             ;;
     esac
@@ -440,6 +446,13 @@ download_installation_files() {
     if [ "$INSTALL_LEVEL" -ge 2 ]; then
         mkdir -p "${TMP_DIR}/.mahirolab/templates"
         local template_files=("research-report.md" "worker-task.md" "code-review.md")
+
+        # Add git hooks template for Level 3
+        if [ "$INSTALL_LEVEL" -eq 3 ]; then
+            mkdir -p "${TMP_DIR}/.mahirolab/templates/git-hooks"
+            template_files+=("git-hooks/commit-msg")
+        fi
+
         for tmpl in "${template_files[@]}"; do
             local tmpl_url=$(get_raw_url ".mahirolab/templates/${tmpl}")
             if ! download_file "$tmpl_url" "${TMP_DIR}/.mahirolab/templates/${tmpl}"; then

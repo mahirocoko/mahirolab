@@ -21,7 +21,7 @@ curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh
 ```
 
 ### Level 3 - Full
-Everything in Level 2 + Git conventions and slash commands (17+ files)
+Everything in Level 2 + Git conventions, git hooks, and slash commands (21+ files)
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh | bash -s -- --level=3
@@ -42,7 +42,9 @@ curl -sSL https://raw.githubusercontent.com/mahirocoko/mahirolab/main/install.sh
 
 ## Git Hooks Setup
 
-After installation, configure git hooks to enforce clean commit messages:
+**Level 3 includes automatic git hooks installation!**
+
+For Level 1/2 users, or to manually configure git hooks:
 
 ### Install Commit Validation Hook
 
@@ -115,6 +117,7 @@ Everything in Level 1 plus:
 ### Level 3 - Full
 Everything in Level 2 plus:
 - **Git conventions** - COMMIT_GUIDE.md
+- **Git hooks** - Automatic AI attribution validation in commits
 - **Slash commands** - `/git:commit`, `/git:commit-push`
 - **Team workflows** - Complete collaboration setup
 
