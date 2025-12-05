@@ -354,11 +354,11 @@ show_post_install_message() {
     echo ""
 
     # Step 5: Install git hooks automatically
-    if command -v git &> /dev/null && [ -d ".git" ]; then
+    # Always check the install target, not the current working directory
+    if command -v git &> /dev/null && git -C "${INSTALL_DIR}" rev-parse --git-dir >/dev/null 2>&1; then
         print_step "Installing git hooks for AI attribution validation..."
         if [ -f "${INSTALL_DIR}/.mahirolab/bin/install-git-hooks.sh" ]; then
-            cd "${INSTALL_DIR}"
-            if bash .mahirolab/bin/install-git-hooks.sh --force 2>/dev/null; then
+            if (cd "${INSTALL_DIR}" && bash .mahirolab/bin/install-git-hooks.sh --force 2>/dev/null); then
                 print_success "Git hooks installed successfully"
                 echo -e "  • Commits with AI attribution will be automatically blocked"
                 echo -e "  • Run ${CYAN}.mahirolab/bin/install-git-hooks.sh --help${RESET} for options"
@@ -370,7 +370,7 @@ show_post_install_message() {
             print_warning "Git hooks installer not found"
         fi
     else
-        print_info "Git repository not detected - skipping git hooks installation"
+        print_info "Git repository not detected at ${INSTALL_DIR} - skipping git hooks installation"
     fi
     echo ""
 
