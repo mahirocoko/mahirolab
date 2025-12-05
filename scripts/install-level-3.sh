@@ -72,6 +72,7 @@ install_level_3() {
                 ".mahirolab/bin"
                 ".mahirolab/docs"
                 ".mahirolab/templates"
+                ".mahirolab/templates/git-hooks"
                 ".mahirolab/research"
                 ".mahirolab/workers"
                 ".mahirolab/state"
@@ -95,6 +96,7 @@ install_level_3() {
                 "codex-worker-launcher.sh"
                 "codex-status.sh"
                 "codex-cleanup.sh"
+                "install-git-hooks.sh"
             )
 
             # Try multiple possible locations for bin directory
@@ -149,6 +151,7 @@ install_level_3() {
                 "research-report.md"
                 "worker-task.md"
                 "code-review.md"
+                "git-hooks/commit-msg"
             )
 
             # Try multiple possible locations for templates directory
