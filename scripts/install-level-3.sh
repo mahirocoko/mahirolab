@@ -352,6 +352,28 @@ show_post_install_message() {
     echo -e "  Scripts use ${RED}danger-full-access${RESET} mode"
     echo -e "  Run only in isolated development environments"
     echo ""
+
+    # Step 5: Install git hooks automatically
+    if command -v git &> /dev/null && [ -d ".git" ]; then
+        print_step "Installing git hooks for AI attribution validation..."
+        if [ -f "${INSTALL_DIR}/.mahirolab/bin/install-git-hooks.sh" ]; then
+            cd "${INSTALL_DIR}"
+            if bash .mahirolab/bin/install-git-hooks.sh --force 2>/dev/null; then
+                print_success "Git hooks installed successfully"
+                echo -e "  • Commits with AI attribution will be automatically blocked"
+                echo -e "  • Run ${CYAN}.mahirolab/bin/install-git-hooks.sh --help${RESET} for options"
+            else
+                print_warning "Git hooks installation failed (non-fatal)"
+                echo -e "  • Run manually: ${CYAN}.mahirolab/bin/install-git-hooks.sh${RESET}"
+            fi
+        else
+            print_warning "Git hooks installer not found"
+        fi
+    else
+        print_info "Git repository not detected - skipping git hooks installation"
+    fi
+    echo ""
+
     print_success "Ready to use with full features! 🚀"
     echo ""
 }
